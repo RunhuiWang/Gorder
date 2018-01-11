@@ -131,7 +131,6 @@ void Graph::readGraph(const string& fullname) {
 }
 
 void Graph::Transform(){
-	vector<int> order;
 	RCMOrder(order);
 	if(order.size()!=vsize){
 		cout << "order.size()!=vsize" << endl;
@@ -241,6 +240,17 @@ void Graph::PrintReOrderedGraph(const vector<int>& order){
 		}
 	}
 	out.close();
+
+	ofstream out_map((name+"_Gmap.txt").c_str());
+    vector<int> ret(vsize);
+    
+    for (int i = 0; i < vsize; i ++) {
+        ret[order[i]] = i;
+    }
+    for (int i = 0; i < vsize; i++) {
+        out_map << order[this->order[i]] << endl;
+    }
+    out_map.close();
 }
 
 
@@ -404,11 +414,11 @@ double Graph::GapCost(vector<int>& order){
 void Graph::GorderGreedy(vector<int>& retorder, int window){
 	UnitHeap unitheap(vsize);
 	vector<bool> popvexist(vsize, false);
-	vector<int> order;
+	vector<int> gorder;
 	int count=0;
 	vector<int> zero;
 	zero.reserve(10000);
-	order.reserve(vsize);
+	gorder.reserve(vsize);
 	const int hugevertex=sqrt((double)vsize);
 
 	for(int i=0; i<vsize; i++){
@@ -431,7 +441,7 @@ void Graph::GorderGreedy(vector<int>& retorder, int window){
 		}
 	}
 
-	order.push_back(tmpindex);
+	gorder.push_back(tmpindex);
 	unitheap.update[tmpindex]=INT_MAX/2;
 	unitheap.DeleteElement(tmpindex);
 	for(int i=graph[tmpindex].instart, limit1=graph[tmpindex+1].instart; i<limit1; i++){
@@ -503,12 +513,12 @@ void Graph::GorderGreedy(vector<int>& retorder, int window){
 #ifndef Release
 		time2=clock();
 #endif
-		order.push_back(v);
+		gorder.push_back(v);
 		unitheap.update[v]=INT_MAX/2;
 
 		int popv;
 		if(count-window>=0)
-			popv=order[count-window];
+			popv=gorder[count-window];
 		else
 			popv=-1;
 
@@ -609,11 +619,11 @@ void Graph::GorderGreedy(vector<int>& retorder, int window){
 	sum3+=time4-time3;
 #endif
 	}
-	order.insert(order.end()-1, zero.begin(), zero.end());
+	gorder.insert(gorder.end()-1, zero.begin(), zero.end());
 
 
 #ifndef Release
-	vector<int> tmporder=order;
+	vector<int> tmporder=gorder;
 	sort(tmporder.begin(), tmporder.end());
 	for(int i=0; i<tmporder.size()-1; i++){
 		if(tmporder[i]==tmporder[i+1]){
@@ -633,7 +643,7 @@ void Graph::GorderGreedy(vector<int>& retorder, int window){
 	retorder.clear();
 	retorder.resize(vsize);
 	for(int i=0; i<vsize; i++){
-		retorder[order[i]]=i;
+		retorder[gorder[i]]=i;
 	}
 }
 

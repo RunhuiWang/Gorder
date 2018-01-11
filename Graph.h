@@ -58,6 +58,7 @@ class Graph{
 		vector<Vertex> graph;
 		vector<int> outedge;
 		vector<int> inedge;
+        vector<int> order;
 	
 		string getFilename();
 		void setFilename(string name);
